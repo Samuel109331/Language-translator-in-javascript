@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+	*{
+		font-size: 18px;
+	}
+	#container {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%,-50%);
+		padding: 100px;
+	}
+	textarea {
+		font-family: fantasy;
+		font-size: 20px;
+	}
+	label {
+		font-family: fantasy;
+		font-size: 20px;
+	}
+	select {
+		font-family: fantasy;
+		font-size: 20px;
+	}
+	</style>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Language translator</title>
+</head>
+<body>
+	<div id="container">
+<label>Enter text you want to translate</label>
+<br><hr>
+<textarea cols="40" rows="10" placeholder="Enter text here" oninput="translateText()"></textarea>
+<br><hr>
+<select id="lang-list">
+	
+</select>
+<br><hr>
+<textarea rows="10" cols="40" placeholder="Translated text goes here..." readonly></textarea>
+</div>
+<script type="text/javascript">
+window.onload = async () => {
+  async function getLanguages() {
+    var response = await fetch("https://translateapi-7e2w.onrender.com/langlist");
+    var list = await response.json();
+    return list['langs'];
+  }
+
+  var languages = await getLanguages();
+  // alert(languages);
+  
+  var options = [];
+  for (let i = 0; i < languages.length; i++) {
+    options.push(document.createElement("option"));
+    document.querySelector("#lang-list").appendChild(options[i])
+    options[i].textContent = languages[i];
+  }
+  
+
+}
+function translateText (){
+const ta = document.querySelectorAll("textarea");
+var selectedLang = "";
+for (var i = 0; i < document.querySelectorAll('option').length; i++) {
+	if (document.querySelectorAll('option')[i].selected) {
+		selectedLang = document.querySelectorAll('option')[i].textContent
+	}
+}
+
+
+fetch(`https://translateapi-7e2w.onrender.com/translate/${ta[0].value}/${selectedLang}`)
+      .then(response => response.json())
+      .then(
+      	data => ta[1].value = data['result']
+      	);
+}	
+</script>
+</body>
+</html>
